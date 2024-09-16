@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35222.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{C9B82514-D6AA-477E-8B1D-6E5E5852D70D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{D0DABB47-A6D5-4BBB-B830-565DE403FE21}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AFFFF9ED-3B95-4F9E-8A1F-B5B6E536AF5E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocBridgeService", "DocBridgeService\DocBridgeService.csproj", "{58830951-621F-4197-BE75-B9690C6F3243}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BridgeInfrastructure", "BridgeInfrastructure\BridgeInfrastructure.csproj", "{7C5B1286-EA98-4AE5-A2E7-201DBB9E638D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocBridgeService.Tests", "DocBridgeService.Tests\DocBridgeService.Tests.csproj", "{DF000DAC-3C01-4077-9967-6B1E9D514A4C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58830951-621F-4197-BE75-B9690C6F3243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58830951-621F-4197-BE75-B9690C6F3243}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58830951-621F-4197-BE75-B9690C6F3243}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58830951-621F-4197-BE75-B9690C6F3243}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C5B1286-EA98-4AE5-A2E7-201DBB9E638D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C5B1286-EA98-4AE5-A2E7-201DBB9E638D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C5B1286-EA98-4AE5-A2E7-201DBB9E638D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C5B1286-EA98-4AE5-A2E7-201DBB9E638D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF000DAC-3C01-4077-9967-6B1E9D514A4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF000DAC-3C01-4077-9967-6B1E9D514A4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF000DAC-3C01-4077-9967-6B1E9D514A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF000DAC-3C01-4077-9967-6B1E9D514A4C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{58830951-621F-4197-BE75-B9690C6F3243} = {C9B82514-D6AA-477E-8B1D-6E5E5852D70D}
+		{7C5B1286-EA98-4AE5-A2E7-201DBB9E638D} = {D0DABB47-A6D5-4BBB-B830-565DE403FE21}
+		{DF000DAC-3C01-4077-9967-6B1E9D514A4C} = {AFFFF9ED-3B95-4F9E-8A1F-B5B6E536AF5E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D79892F5-CF47-4305-B9C0-57DFE6139390}
+	EndGlobalSection
+EndGlobal

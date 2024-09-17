@@ -21,6 +21,7 @@ using Amazon.CloudWatchLogs;
 using BridgeInfrastructure.Behaviors;
 using FluentValidation;
 using Serilog.Sinks.AwsCloudWatch;
+using DocBridgeService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +51,15 @@ builder.Host.UseSerilog((context, services, configuration) =>
 // Register LoggingBehavior and ValidatorBehavior globally
 builder.Services.AddSingleton<LoggingBehavior>();
 builder.Services.AddTransient(typeof(ValidatorBehavior<,>));
+builder.Services.AddTransient<IFileWatcherService, FileWatcherService>();
+builder.Services.AddTransient<IApiService, ApiService>();
+builder.Services.AddTransient<IFileParser, XMLFileParser>(); // Choose the parser
+
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
+{
+    client.BaseAddress = new Uri("https://repocentral/api");
+});
+
 
 // Register FluentValidation validators
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();

@@ -11,19 +11,18 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Models\FXCentral\" />
-    <Folder Include="Models\Geneva\" />
-    <Folder Include="Models\Everest\" />
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\BridgeInfrastructure\BridgeInfrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BridgeInfrastructure\BridgeInfrastructure.csproj" />
+    <Folder Include="Models\Everest\" />
+    <Folder Include="Models\FXCentral\" />
+    <Folder Include="Models\Geneva\" />
   </ItemGroup>
 
 </Project>

@@ -1,31 +1,43 @@
 ﻿using DocBridgeService.Models;
 using DocBridgeService.Services;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using BridgeInfrastructure.Behaviors;
 
 namespace DocBridgeService.Tests;
 
 public class FileWatcherServiceTests
 {
-    private readonly Mock<IFileParser> _fileParserMock;
     private readonly Mock<IApiService> _apiServiceMock;
+    private readonly Mock<LoggingBehavior> _loggingBehaviorMock;
+    private readonly Mock<ValidatorBehavior<FileData>> _validatorBehaviorMock;
+    private readonly IDictionary<string, Mock<IFileParser>> _fileParsersMock;
 
     public FileWatcherServiceTests()
     {
-        _fileParserMock = new Mock<IFileParser>();
         _apiServiceMock = new Mock<IApiService>();
+        _loggingBehaviorMock = new Mock<LoggingBehavior>();
+        _validatorBehaviorMock = new Mock<ValidatorBehavior<FileData>>();
+
+        _fileParsersMock = new Dictionary<string, Mock<IFileParser>>
+        {
+            { ".xml", new Mock<IFileParser>() },
+            { ".csv", new Mock<IFileParser>() }
+        };
     }
 
     [Fact]
-    public async Task StartWatchingAsync_ShouldParseAndSendFileData_WhenFileIsCreated()
+    public async Task StartWatchingAsync_ShouldParseAndSendFileData_WhenXmlFileIsCreated()
     {
         // Arrange
         var locationsToWatch = new[] { "/mock-location" };
-        var fileWatcherService = new FileWatcherService(_fileParserMock.Object, _apiServiceMock.Object, locationsToWatch);
+        var fileParsers = new Dictionary<string, IFileParser>
+        {
+            { ".xml", _fileParsersMock[".xml"].Object },
+            { ".csv", _fileParsersMock[".csv"].Object }
+        };
+
+        var fileWatcherService = new FileWatcherService(fileParsers, _apiServiceMock.Object,
+            _loggingBehaviorMock.Object, _validatorBehaviorMock.Object, locationsToWatch);
 
         var fileData = new FileData
         {
@@ -35,14 +47,45 @@ public class FileWatcherServiceTests
         };
 
         // Setup the mock to return parsed file data
-        _fileParserMock.Setup(p => p.ParseAsync(It.IsAny<string>())).ReturnsAsync(fileData);
+        _fileParsersMock[".xml"].Setup(p => p.ParseAsync(It.IsAny<string>())).ReturnsAsync(fileData);
 
         // Act
-        // Simulate that a file is being created by calling the internal method manually.
         await fileWatcherService.OnFileCreated("/mock-location/test.xml");
 
         // Assert
-        _fileParserMock.Verify(p => p.ParseAsync(It.IsAny<string>()), Times.Once);
+        _fileParsersMock[".xml"].Verify(p => p.ParseAsync(It.IsAny<string>()), Times.Once);
+        _apiServiceMock.Verify(a => a.SendToRepoCentralAsync(It.IsAny<FileData>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task StartWatchingAsync_ShouldParseAndSendFileData_WhenCsvFileIsCreated()
+    {
+        // Arrange
+        var locationsToWatch = new[] { "/mock-location" };
+        var fileParsers = new Dictionary<string, IFileParser>
+        {
+            { ".xml", _fileParsersMock[".xml"].Object },
+            { ".csv", _fileParsersMock[".csv"].Object }
+        };
+
+        var fileWatcherService = new FileWatcherService(fileParsers, _apiServiceMock.Object,
+            _loggingBehaviorMock.Object, _validatorBehaviorMock.Object, locationsToWatch);
+
+        var fileData = new FileData
+        {
+            FileName = "test.csv",
+            Content = "column1,column2\nvalue1,value2",
+            Location = "/mock-location"
+        };
+
+        // Setup the mock to return parsed file data
+        _fileParsersMock[".csv"].Setup(p => p.ParseAsync(It.IsAny<string>())).ReturnsAsync(fileData);
+
+        // Act
+        await fileWatcherService.OnFileCreated("/mock-location/test.csv");
+
+        // Assert
+        _fileParsersMock[".csv"].Verify(p => p.ParseAsync(It.IsAny<string>()), Times.Once);
         _apiServiceMock.Verify(a => a.SendToRepoCentralAsync(It.IsAny<FileData>()), Times.Once);
     }
 }

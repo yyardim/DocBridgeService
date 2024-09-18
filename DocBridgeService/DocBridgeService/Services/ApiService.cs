@@ -4,14 +4,9 @@ using System.Text;
 
 namespace DocBridgeService.Services;
 
-public class ApiService : IApiService
+public class ApiService(HttpClient httpClient) : IApiService
 {
-    private readonly HttpClient _httpClient;
-
-    public ApiService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
+    private readonly HttpClient _httpClient = httpClient;
 
     public async Task<RepoCentralResponse> SendToRepoCentralAsync(FileData fileData)
     {

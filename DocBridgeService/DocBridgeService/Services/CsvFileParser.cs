@@ -1,6 +1,4 @@
-﻿using DocBridgeService.Models;
-
-namespace DocBridgeService.Services;
+﻿namespace DocBridgeService.Services;
 
 public class CsvFileParser : IFileParser
 {

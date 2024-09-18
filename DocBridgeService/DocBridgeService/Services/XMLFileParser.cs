@@ -1,7 +1,4 @@
-﻿using DocBridgeService.Models;
-using System.Xml.Linq;
-
-namespace DocBridgeService.Services;
+﻿namespace DocBridgeService.Services;
 
 public class XMLFileParser : IFileParser
 {

@@ -1,25 +1,6 @@
-//var builder = WebApplication.CreateBuilder(args);
-
-//// Add services to the container.
-//builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
-
-//var app = builder.Build();
-
-//// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
-
-//app.UseHttpsRedirection();
-
-
 using Serilog;
 using Amazon.CloudWatchLogs;
 using BridgeInfrastructure.Behaviors;
-using FluentValidation;
 using Serilog.Sinks.AwsCloudWatch;
 using DocBridgeService.Services;
 
@@ -50,26 +31,31 @@ builder.Host.UseSerilog((context, services, configuration) =>
 
 // Register LoggingBehavior and ValidatorBehavior globally
 builder.Services.AddSingleton<LoggingBehavior>();
-builder.Services.AddTransient(typeof(ValidatorBehavior<,>));
+builder.Services.AddTransient(typeof(ValidatorBehavior<>));
 builder.Services.AddTransient<IFileWatcherService, FileWatcherService>();
 builder.Services.AddTransient<IApiService, ApiService>();
-builder.Services.AddTransient<IFileParser, XMLFileParser>(); // Choose the parser
+
+// Register multiple parsers
+builder.Services.AddTransient<XMLFileParser>();
+builder.Services.AddTransient<CsvFileParser>();
+builder.Services.AddSingleton<IDictionary<string, IFileParser>>(serviceProvider =>
+    new Dictionary<string, IFileParser>
+    {
+        { ".xml", serviceProvider.GetRequiredService<XMLFileParser>() },
+        { ".csv", serviceProvider.GetRequiredService<CsvFileParser>() }
+    });
 
 builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
     client.BaseAddress = new Uri("https://repocentral/api");
 });
 
-
-// Register FluentValidation validators
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
-// Register other services
-
-// Add controllers
-builder.Services.AddControllers();
-
 var app = builder.Build();
+
+// Start FileWatcherService
+var fileWatcherService = app.Services.GetRequiredService<IFileWatcherService>();
+Task.Run(() => fileWatcherService.StartWatchingAsync());
+
 app.UseSerilogRequestLogging();
 app.MapControllers();
 app.Run();

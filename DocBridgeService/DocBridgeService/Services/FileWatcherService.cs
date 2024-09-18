@@ -1,17 +1,16 @@
-﻿namespace DocBridgeService.Services;
+﻿using BridgeInfrastructure.Behaviors;
+using DocBridgeService.Models;
 
-public class FileWatcherService : IFileWatcherService
+namespace DocBridgeService.Services;
+
+public class FileWatcherService(IDictionary<string, IFileParser> fileParsers, IApiService apiService,
+    LoggingBehavior loggingBehavior, ValidatorBehavior<FileData> validatorBehavior, string[] locationsToWatch) : IFileWatcherService
 {
-    private readonly IFileParser _fileParser;
-    private readonly IApiService _apiService;
-    private readonly string[] _locationsToWatch;
-
-    public FileWatcherService(IFileParser fileParser, IApiService apiService, string[] locationsToWatch)
-    {
-        _fileParser = fileParser;
-        _apiService = apiService;
-        _locationsToWatch = locationsToWatch;
-    }
+    private readonly IDictionary<string, IFileParser> _fileParsers = fileParsers;
+    private readonly IApiService _apiService = apiService;
+    private readonly LoggingBehavior _loggingBehavior = loggingBehavior;
+    private readonly ValidatorBehavior<FileData> _validatorBehavior = validatorBehavior;
+    private readonly string[] _locationsToWatch = locationsToWatch;
 
     public async Task StartWatchingAsync()
     {
@@ -31,10 +30,26 @@ public class FileWatcherService : IFileWatcherService
         }
     }
 
-    // Simulate file created event for testing
     public async Task OnFileCreated(string filePath)
     {
-        var fileData = await _fileParser.ParseAsync(filePath);
-        await _apiService.SendToRepoCentralAsync(fileData);
+        var extension = Path.GetExtension(filePath).ToLower();
+        if (_fileParsers.TryGetValue(extension, out var parser))
+        {
+            await _loggingBehavior.LogAsync(async () =>
+            {
+                var fileData = await parser.ParseAsync(filePath);
+
+                // Validation step
+                await _validatorBehavior.ValidateAsync(fileData);
+
+                // Send to RepoCentral
+                return await _apiService.SendToRepoCentralAsync(fileData);
+
+            }, filePath);
+        }
+        else
+        {
+            Console.WriteLine($"No parser available for files with extension {extension}");
+        }
     }
 }
